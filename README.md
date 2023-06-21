@@ -4,6 +4,8 @@ C# .NET 7 API for WiZ light bulbs.
 
 A WinUI project styled to match the Windows 11 Action Centre is included. Starting this project will add an icon to the system tray.
 
+![image](https://github.com/ZachChapman/WizBulbApi/assets/136128804/eb3f8d43-cd57-4411-9c27-64700c18255a)
+
 ## Usage
 ```csharp
 var handles = new List<BulbHandle>();
