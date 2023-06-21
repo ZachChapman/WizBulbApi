@@ -1,0 +1,24 @@
+﻿<local:_RootContextMenuView
+    x:Class="WizBulbApi.WinUI.RootContextMenuView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:WizBulbApi.WinUI"
+    mc:Ignorable="d"
+    >
+
+    <StackPanel
+        Spacing="10"
+        Margin="0 10 0 0"
+        VerticalAlignment="Center"
+        >
+        <Button
+            Content="Exit app"
+            Command="{x:Bind ViewModel.ExitAppCommand, Mode=OneWay}"
+            Padding="0 10"
+            HorizontalAlignment="Stretch"
+            />
+    </StackPanel>
+
+</local:_RootContextMenuView>

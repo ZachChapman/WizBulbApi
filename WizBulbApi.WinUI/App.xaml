@@ -1,0 +1,61 @@
+﻿<Application
+    x:Class="WizBulbApi.WinUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WizBulbApi.WinUI"
+    RequestedTheme="Dark"
+    >
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+
+                <!-- Other merged dictionaries here -->
+                <ResourceDictionary Source="ms-appx:///Styles/ContentDialog.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/NumberBox.xaml" />
+                <ResourceDictionary Source="ms-appx:///ValueConverters/Converters.xaml" />
+
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/FontSizes.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/TextBox.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/ListBox.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/ListView.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/GridView.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/NavigationView.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/ToggleButton.xaml" />
+                <ResourceDictionary Source="ms-appx:///MvvmFramework.WinUI/Styles/Button.xaml" />
+                <!--<ResourceDictionary Source="ms-appx:///Styles/WindowChromes.xaml" />-->
+
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" -->
+
+            <!-- Other app resources here -->
+
+
+
+            <!-- Window caption buttons -->
+            <SolidColorBrush x:Key="WindowCaptionBackgroundBrush" Color="Transparent" />
+            <StaticResource
+                x:Key="WindowCaptionBackground"
+                ResourceKey="WindowCaptionBackgroundBrush"
+                />
+            <StaticResource
+                x:Key="WindowCaptionBackgroundDisabled"
+                ResourceKey="WindowCaptionBackgroundBrush"
+                />
+
+
+            <!-- Hyperlink buttons -->
+            <StaticResource
+                x:Key="HyperlinkButtonBackgroundPointerOver"
+                ResourceKey="SubtleFillColorTransparentBrush"
+                />
+
+            <StaticResource
+                x:Key="HyperlinkButtonBackgroundPressed"
+                ResourceKey="SubtleFillColorTransparentBrush"
+                />
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

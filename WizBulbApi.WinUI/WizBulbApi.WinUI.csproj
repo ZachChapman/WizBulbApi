@@ -1,0 +1,144 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	<OutputType>WinExe</OutputType>
+	<TargetFramework>net7.0-windows10.0.22621.0</TargetFramework>
+	<RootNamespace>WizBulbApi.WinUI</RootNamespace>
+	<ApplicationManifest>app.manifest</ApplicationManifest>
+	<Platforms>x86;x64;arm64</Platforms>
+	<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+	<PublishProfile>win10-$(Platform).pubxml</PublishProfile>
+	<PlatformTarget>AnyCPU</PlatformTarget>
+	<UseWinUI>true</UseWinUI>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<Nullable>enable</Nullable>
+	<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
+	<!--<WindowsPackageType>None</WindowsPackageType>-->
+  </PropertyGroup>
+
+	<ItemGroup>
+	<Compile Remove="Services\NotifyIconManager.cs" />
+	<Compile Remove="Services\WindowSystemMenuManager.cs" />
+	<Compile Remove="Views\BulbDynamicControl.xaml.cs" />
+	<Compile Remove="Views\BulbExtraControl.xaml.cs" />
+	<Compile Remove="Views\BulbSimpleControl.xaml.cs" />
+	<Compile Remove="Views\BulbWhiteControl.xaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Remove="BulbView.xaml" />
+	<None Remove="LabelledTextBlock.xaml" />
+	<None Remove="Styles\ContentDialog.xaml" />
+	<None Remove="Styles\NumberBox.xaml" />
+	<None Remove="ValueConverters\Converters.xaml" />
+	<None Remove="Views\BulbControlsView.xaml" />
+	<None Remove="Views\BulbDynamicControl.xaml" />
+	<None Remove="Views\BulbExtraControl.xaml" />
+	<None Remove="Views\BulbSimpleControl.xaml" />
+	<None Remove="Views\BulbView.xaml" />
+	<None Remove="Views\BulbWhiteControl.xaml" />
+	<None Remove="Views\EmptyView.xaml" />
+	<None Remove="Views\LoginView.xaml" />
+	<None Remove="Views\RootContextMenuView.xaml" />
+	<None Remove="Views\SamplePointsEditorView.xaml" />
+	<None Remove="Views\ScenesView.xaml" />
+	<None Remove="Views\SettingsView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+	<Page Remove="Views\BulbDynamicControl.xaml" />
+	<Page Remove="Views\BulbExtraControl.xaml" />
+	<Page Remove="Views\BulbSimpleControl.xaml" />
+	<Page Remove="Views\BulbWhiteControl.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Content Include="Assets\SplashScreen.scale-200.png" />
+	<Content Include="Assets\LockScreenLogo.scale-200.png" />
+	<Content Include="Assets\Square150x150Logo.scale-200.png" />
+	<Content Include="Assets\Square44x44Logo.scale-200.png" />
+	<Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
+	<Content Include="Assets\StoreLogo.png" />
+	<Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.1.2" />
+	<!--<PackageReference Include="FontAwesome6.Fonts" Version="2.2.0" />-->
+	<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+	<PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+	<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230602002" />
+	<PackageReference Include="NAudio" Version="2.1.0" />
+	<PackageReference Include="PInvoke.Gdi32" Version="0.7.124" />
+	<PackageReference Include="PInvoke.User32" Version="0.7.124" />
+	<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
+	<PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
+	<PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+	<PackageReference Include="System.Runtime.InteropServices.WindowsRuntime" Version="4.3.0" />
+	<Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <!-- Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+	   Tools extension to be activated for this project even if the Windows App SDK Nuget
+	   package has not yet been restored -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnablePreviewMsixTooling)'=='true'">
+	<ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+	<ProjectReference Include="..\..\Framework\MvvmFramework\MvvmFramework.WinUI\MvvmFramework.WinUI.csproj" />
+	<ProjectReference Include="..\..\Framework\MvvmFramework\MvvmFramework\MvvmFramework.csproj" />
+	<ProjectReference Include="..\..\Framework\Toolbox\Toolbox.csproj" />
+	<ProjectReference Include="..\WizBulbApi\WizBulbApi.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+	<Page Update="Styles\ContentDialog.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Page>
+	<Page Update="Views\BulbControlsView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</Page>
+	<Page Update="ValueConverters\Converters.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</Page>
+	<Page Update="Styles\NumberBox.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</Page>
+	<None Update="Views\BulbListView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</None>
+	<Page Update="Views\RootContextMenuView.xaml">
+	  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	</Page>
+	<Page Update="Views\SamplePointsEditorView.xaml">
+	  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Views\BulbView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <CopyToOutputDirectory></CopyToOutputDirectory>
+	</Page>
+	<Page Update="Views\SettingsView.xaml">
+	  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Views\LoginView.xaml">
+	  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Views\EmptyView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <CopyToOutputDirectory></CopyToOutputDirectory>
+	</Page>
+	<Page Update="Views\ScenesView.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <CopyToOutputDirectory></CopyToOutputDirectory>
+	</Page>
+  </ItemGroup>
+  <ItemGroup>
+	<Page Update="Controls\LabelledTextBlock.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	</Page>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "WizBulbLibrary.WinUI (Packaged)": {
+      "commandName": "MsixPackage"
+    },
+    "WizBulbLibrary.WinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

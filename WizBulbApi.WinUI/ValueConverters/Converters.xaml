@@ -1,0 +1,30 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WizBulbApi.WinUI"
+    xmlns:lib="using:MvvmFramework.WinUI"
+    >
+
+    <local:DebugConverter x:Key="DebugConverter" />
+    <lib:BoolVisibilityConverter x:Key="BoolVisibilityConverter" />
+    <lib:BoolVisibilityConverter
+        x:Key="InvertedBoolVisibilityConverter"
+        IsTrue="Collapsed"
+        IsFalse="Visible"
+        />
+    <lib:BoolOpacityConverter x:Key="BoolOpacityConverter" />
+    <lib:BoolOpacityConverter
+        x:Key="InvertedBoolOpacityConverter"
+        IsTrue="0"
+        IsFalse="1"
+        />
+    <local:SceneIdConverter x:Key="SceneIdConverter" />
+    <local:SceneIdConverter
+        x:Key="SceneIdIconConverter"
+        ConvertTo="Icon"
+        />
+    <lib:BoolInverter x:Key="BoolInverter" />
+    <lib:EnumVisibilityConverter x:Key="EnumVisibilityConverter" />
+    <lib:EnumBoolConverter x:Key="EnumBoolConverter" />
+
+</ResourceDictionary>
