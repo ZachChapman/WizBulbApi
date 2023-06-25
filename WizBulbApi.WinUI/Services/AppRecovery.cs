@@ -6,10 +6,10 @@ namespace WizBulbApi.WinUI;
 public class AppRecovery
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly AppStateDataAccess _appStateDataAccess;
+    private readonly IAppStateDataAccess _appStateDataAccess;
     private readonly INavigationService _navigationService;
 
-    public AppRecovery(IServiceProvider serviceProvider, AppStateDataAccess appStateDataAccess, INavigationService navigationService)
+    public AppRecovery(IServiceProvider serviceProvider, IAppStateDataAccess appStateDataAccess, INavigationService navigationService)
     {
         _serviceProvider = serviceProvider;
         _appStateDataAccess = appStateDataAccess;
@@ -69,7 +69,6 @@ public class AppRecovery
 
         if(viewModel is not null)
         {
-            await viewModel.Initialise();
             await viewModel.RestoreState(appState.ViewModelState);
         }
 

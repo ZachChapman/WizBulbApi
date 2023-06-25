@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml.Media.Animation;
+﻿using Microsoft.UI.Xaml.Media.Animation;
 using MvvmFramework;
 using MvvmFramework.WinUI;
 using System.Collections.ObjectModel;
@@ -8,46 +7,44 @@ namespace WizBulbApi.WinUI;
 
 public class BulbListViewModel : ViewModel
 {
-	private readonly INavigationService _navigationService;
 	private readonly IBulbDataAccess _bulbDataAccess;
 	private readonly ISettingsDataAccess _settingsDataAccess;
-	private int _homeId;
+    private readonly IViewModelProvider _viewModelProvider;
+    private readonly NavigationCommands _navigationCommands;
+    private int _homeId;
 
 	public BulbListViewModel(
-		INavigationService navigationService,
 		IBulbDataAccess bulbDataAccess,
-		ISettingsDataAccess settingsDataAccess)
+		ISettingsDataAccess settingsDataAccess,
+		IViewModelProvider viewModelProvider,
+		NavigationCommands navigationCommands)
 	{
-		_navigationService = navigationService;
 		_bulbDataAccess = bulbDataAccess;
 		_settingsDataAccess = settingsDataAccess;
-	}
-
-	public static BulbListViewModel Create(int homeId)
-	{
-		var viewModel = App.Host.Services.GetRequiredService<BulbListViewModel>();
-		viewModel._homeId = homeId;
-
-		return viewModel;
-	}
+        _viewModelProvider = viewModelProvider;
+        _navigationCommands = navigationCommands;
+    }
 
 	public ObservableCollection<BulbListItemViewModel> Bulbs { get; private set; } = new();
 	public bool IsLoading { get; private set; }
 
 	public AsyncRelayCommand ScanCommand => new(ScanAsync);
-	public AsyncRelayCommand<BulbHandle> GoToBulbCommand => new(handle => _navigationService.GoToBulb(handle, new NavigationOptions(new DrillInNavigationTransitionInfo())));
-	public AsyncRelayCommand GoToSettingsCommand => new(() => _navigationService.GoToSettings(new NavigationOptions(new DrillInNavigationTransitionInfo())));
+	public AsyncRelayCommand<BulbHandle> GoToBulbCommand => new(handle => _navigationCommands.GoToBulb(handle, new NavigationOptions(new DrillInNavigationTransitionInfo())));
+	public AsyncRelayCommand GoToSettingsCommand => new(() => _navigationCommands.GoToSettings(new NavigationOptions(new DrillInNavigationTransitionInfo())));
 
-	public override async Task Initialise()
+	public async Task Initialise(int homeId)
 	{
+		_homeId = homeId;
+
 		try
 		{
 			IsLoading = true;
 
 			var handles = await _bulbDataAccess.GetAllBulbHandlesAsync(_homeId);
-			handles.ForEach(handle =>
+			handles.ForEach(async handle =>
 			{
-				var bulb = BulbListItemViewModel.Create(handle);
+				var bulb = _viewModelProvider.Create<BulbListItemViewModel>();
+				await bulb.Initialise(handle);
 				Bulbs.Add(bulb);
 			});
 		}
@@ -76,7 +73,8 @@ public class BulbListViewModel : ViewModel
 				handle.Name = "New Light";
 				await _bulbDataAccess.AddBulbHandleAsync(handle);
 
-				var bulb = BulbListItemViewModel.Create(handle);
+				var bulb = _viewModelProvider.Create<BulbListItemViewModel>();
+				await bulb.Initialise(handle);
 				Bulbs.Add(bulb);
 			});
 		}

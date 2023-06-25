@@ -1,10 +1,10 @@
 ﻿namespace WizBulbApi.Commands;
 
-public class ColourComamnd : BulbCommand
+public class ColourCommand : BulbCommand
 {
     private readonly Colour _colour;
 
-    public ColourComamnd(Colour colour)
+    public ColourCommand(Colour colour)
     {
         _colour = colour;
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.UI;
 using MvvmFramework;
 using System.Collections.ObjectModel;
@@ -17,6 +16,7 @@ public class BulbViewModel : ViewModel, IDisposable
     private readonly IDialogService _dialogService;
     private readonly IBulbDataAccess _bulbDataAccess;
     private readonly ISettingsDataAccess _settingsDataAccess;
+    private readonly NavigationCommands _navigationCommands;
     private readonly ILogger<BulbViewModel> _logger;
     private readonly Repeater _stateListenerRepeater;
     private readonly Repeater _sampleScreenRepeater;
@@ -31,12 +31,14 @@ public class BulbViewModel : ViewModel, IDisposable
         IBulbDataAccess bulbDataAccess,
         ISettingsDataAccess settingsDataAccess,
         ISamplePointDataAccess samplePointDataAccess,
+        NavigationCommands navigationCommands,
         ILogger<BulbViewModel> logger)
     {
         _navigationService = navigationService;
         _dialogService = dialogService;
         _bulbDataAccess = bulbDataAccess;
         _settingsDataAccess = settingsDataAccess;
+        _navigationCommands = navigationCommands;
         _logger = logger;
 
         _stateListenerRepeater = new(async () =>
@@ -46,14 +48,6 @@ public class BulbViewModel : ViewModel, IDisposable
 
         // TODO: Inject/Initialise elsewhere.
         _bulbModules.Add(new ScreenSamplerBulbModule(samplePointDataAccess));
-    }
-
-    public static BulbViewModel Create(BulbHandle handle)
-    {
-        var viewModel = App.Host.Services.GetRequiredService<BulbViewModel>();
-        viewModel._bulbClient = new(handle);
-
-        return viewModel;
     }
 
     public Connection Connection { get; private set; }
@@ -91,11 +85,13 @@ public class BulbViewModel : ViewModel, IDisposable
     public RelayCommand<SavedScene> RestoreSavedSceneCommand => new(RestoreSavedScene);
     public AsyncRelayCommand<SavedScene> RemoveSavedSceneCommand => new(RemoveSavedScene);
 
-    public override async Task Initialise()
+    public async Task Initialise(BulbHandle handle)
     {
+        _bulbClient = new(handle);
+
         Connection = Connection.Searching;
 
-        Name = _bulbClient.Handle.Name;
+        Name = handle.Name;
 
         ReflectState(await GetSystemConfigStateAsync());
         ReflectState(await GetPilotStateAsync());
@@ -126,7 +122,7 @@ public class BulbViewModel : ViewModel, IDisposable
         var success = _navigationService.GoBack();
         if(!success)
         {
-            await _navigationService.GoToBulbList(HomeId);
+            await _navigationCommands.GoToBulbList(HomeId);
         }
     }
 
@@ -233,7 +229,7 @@ public class BulbViewModel : ViewModel, IDisposable
 
         if(propertyName is nameof(Color))
         {
-            QueueCommand(new ColourComamnd(new((int)Color.R, Color.G, Color.B)));
+            QueueCommand(new ColourCommand(new((int)Color.R, Color.G, Color.B)));
             return;
         }
 
@@ -272,7 +268,7 @@ public class BulbViewModel : ViewModel, IDisposable
             // send a command that will set the bulb to custom.
             if(scene == Scene.Custom)
             {
-                QueueCommand(new ColourComamnd(new((int)Color.R, Color.G, Color.B)));
+                QueueCommand(new ColourCommand(new((int)Color.R, Color.G, Color.B)));
                 return;
             }
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using MvvmFramework;
 using System.ComponentModel;
 
@@ -10,20 +9,15 @@ public class SettingsViewModel : ViewModel
     private readonly INavigationService _navigationService;
     private readonly ISettingsDataAccess _settingsDataAccess;
     private readonly WindowManager _windowManager;
+    private readonly NavigationCommands _navigationCommands;
     private ApplicationTheme _initialTheme;
 
-    public SettingsViewModel(INavigationService navigationService, ISettingsDataAccess settingsDataAccess, WindowManager windowManager)
+    public SettingsViewModel(INavigationService navigationService, ISettingsDataAccess settingsDataAccess, WindowManager windowManager, NavigationCommands navigationCommands)
     {
         _navigationService = navigationService;
         _settingsDataAccess = settingsDataAccess;
         _windowManager = windowManager;
-    }
-
-    public static SettingsViewModel Create()
-    {
-        var viewModel = App.Host.Services.GetRequiredService<SettingsViewModel>();
-
-        return viewModel;
+        _navigationCommands = navigationCommands;
     }
 
     public List<NetworkInfo> NetworkInterfaces { get; private set; } = new();
@@ -37,7 +31,7 @@ public class SettingsViewModel : ViewModel
     public AsyncRelayCommand SaveCommand => new(SaveAndLeave);
     public AsyncRelayCommand RestartCommand => new(SaveAndRestart);
 
-    public override async Task Initialise()
+    public async Task Initialise()
     {
         NetworkInterfaces = NetworkHelper.GetNetworkInfo().ToList();
 
@@ -52,6 +46,12 @@ public class SettingsViewModel : ViewModel
         _initialTheme = Theme;
 
         PropertyChanged += SettingsViewModel_PropertyChanged;
+    }
+
+    public override async Task RestoreState(ViewModelState? state)
+    {
+        await Initialise();
+        await base.RestoreState(state);
     }
 
     public override async Task Validate()
@@ -84,11 +84,11 @@ public class SettingsViewModel : ViewModel
         {
             if(HomeId is null)
             {
-                await _navigationService.GoToLogin();
+                await _navigationCommands.GoToLogin();
             }
             else
             {
-                await _navigationService.GoToBulbList(HomeId!.Value);
+                await _navigationCommands.GoToBulbList(HomeId!.Value);
             }
         }
     }

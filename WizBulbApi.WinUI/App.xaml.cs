@@ -73,18 +73,17 @@ public partial class App : Application
 
         await NavigateToBulbList(settings!.HomeId);
 
-        return;
-        //var a = GraphicsCaptureSession.IsSupported();
-        //var picker = new GraphicsCapturePicker();
-        //InitializeWithWindow.Initialize(picker, _mainWindow.GetWindowHandle());
-        //var item = await picker.PickSingleItemAsync();
+        ////var a = GraphicsCaptureSession.IsSupported();
+        ////var picker = new GraphicsCapturePicker();
+        ////InitializeWithWindow.Initialize(picker, _mainWindow.GetWindowHandle());
+        ////var item = await picker.PickSingleItemAsync();
 
-        var navigationService = Host.Services.GetRequiredService<INavigationService>();
+        //var navigationService = Host.Services.GetRequiredService<INavigationService>();
 
-        var viewModel = SamplePointsEditorViewModel.Create();
-        await viewModel.Initialise();
+        //var viewModel = SamplePointsEditorViewModel.Create();
+        //await viewModel.Initialise();
 
-        navigationService.Navigate(typeof(SamplePointsEditorView), viewModel);
+        //navigationService.Navigate(typeof(SamplePointsEditorView), viewModel);
     }
 
     private async Task ConfigureServices()
@@ -103,16 +102,19 @@ public partial class App : Application
 
                 services.RegisterAllOfType<ViewModel>(ServiceLifetime.Transient);
 
-                services.AddSingleton<ISettingsDataAccess, SettingsDataAccess>(p => new(Storage.FromRootPath("Settings.json")));
-                services.AddSingleton<IBulbDataAccess, BulbDataAccess>(p => new(Storage.FromRootPath("BulbHandles.json")));
-                services.AddSingleton<ISamplePointDataAccess, SamplePointDataAccess>(p => new(Storage.FromRootPath("SamplePoints.json")));
-                services.AddSingleton<AppStateDataAccess>(p => new(Storage.FromRootPath("AppState.json")));
+                if(!Directory.Exists(Storage.FromRootPath("Data"))) Directory.CreateDirectory(Storage.FromRootPath("Data"));
+                services.AddSingleton<ISettingsDataAccess, SettingsDataAccess>(p => new(Storage.FromRootPath("Data", "Settings.json")));
+                services.AddSingleton<IBulbDataAccess, BulbDataAccess>(p => new(Storage.FromRootPath("Data", "BulbHandles.json")));
+                services.AddSingleton<ISamplePointDataAccess, SamplePointDataAccess>(p => new(Storage.FromRootPath("Data", "SamplePoints.json")));
+                services.AddSingleton<IAppStateDataAccess, AppStateDataAccess>(p => new(Storage.FromRootPath("Data", "AppState.json")));
 
+                services.AddSingleton<IViewModelProvider, ViewModelProvider>();
                 services.AddSingleton<INavigationService, NavigationService>(x => new(_mainWindow.Frame));
                 services.AddSingleton<IDialogService, DialogService>();
                 services.AddSingleton<IStorageService, StorageService>();
                 services.AddSingleton<INotificationService, NotificationService>(x => new(_mainWindow.InAppNotification));
                 services.AddSingleton<AppRecovery>();
+                services.AddSingleton<NavigationCommands>();
 
                 services.AddSingleton<WindowManager>(x => WindowManager);
             })
@@ -158,8 +160,9 @@ public partial class App : Application
     private static async Task NavigateToLogin()
     {
         var navigationService = Host.Services.GetRequiredService<INavigationService>();
+        var viewModelProvider = Host.Services.GetRequiredService<IViewModelProvider>();
 
-        var viewModel = LoginViewModel.Create();
+        var viewModel = viewModelProvider.Create<LoginViewModel>();
         await viewModel.Initialise();
 
         navigationService.Navigate(typeof(LoginView), viewModel);
@@ -168,9 +171,10 @@ public partial class App : Application
     private static async Task NavigateToBulbList(int homeId)
     {
         var navigationService = Host.Services.GetRequiredService<INavigationService>();
+        var viewModelProvider = Host.Services.GetRequiredService<IViewModelProvider>();
 
-        var viewModel = BulbListViewModel.Create(homeId);
-        await viewModel.Initialise();
+        var viewModel = viewModelProvider.Create<BulbListViewModel>();
+        await viewModel.Initialise(homeId);
 
         navigationService.Navigate(typeof(BulbListView), viewModel);
     }

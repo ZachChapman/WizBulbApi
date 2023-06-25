@@ -23,19 +23,12 @@ public class SamplePointsEditorViewModel : ViewModel
         }, TimeSpan.FromSeconds(1));
     }
 
-    public static SamplePointsEditorViewModel Create()
-    {
-        var viewModel = App.Host.Services.GetRequiredService<SamplePointsEditorViewModel>();
-
-        return viewModel;
-    }
-
     public TrackedObservableCollection<SamplePoint> SamplePoints { get; } = new();
     public Color PreviewColor { get; private set; }
 
     public AsyncRelayCommand SaveCommand => new(Save);
 
-    public override async Task Initialise()
+    public async Task Initialise()
     {
         SamplePoints.EnableTracking(enabled: false);
         var samplePoints = await _samplePointDataAccess.GetSamplePointsAsync();

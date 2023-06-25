@@ -1,76 +1,70 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using MvvmFramework;
+﻿using MvvmFramework;
 
 namespace WizBulbApi.WinUI;
 
 public class LoginViewModel : ViewModel
 {
-	private readonly INavigationService _navigationService;
-	private readonly ISettingsDataAccess _settingsDataAccess;
+    private readonly ISettingsDataAccess _settingsDataAccess;
+    private readonly NavigationCommands _navigationCommands;
 
-	public LoginViewModel(INavigationService navigationService, ISettingsDataAccess settingsDataAccess)
-	{
-		_navigationService = navigationService;
-		_settingsDataAccess = settingsDataAccess;
-	}
+    public LoginViewModel(
+        ISettingsDataAccess settingsDataAccess,
+        NavigationCommands navigationCommands)
+    {
+        _settingsDataAccess = settingsDataAccess;
+        _navigationCommands = navigationCommands;
+    }
 
-	public static LoginViewModel Create()
-	{
-		var viewModel = App.Host.Services.GetRequiredService<LoginViewModel>();
+    public List<NetworkInfo> NetworkInterfaces { get; private set; } = new();
+    public NetworkInfo NetworkInterface { get; set; }
+    public int? HomeId { get; set; }
 
-		return viewModel;
-	}
+    public AsyncRelayCommand SubmitCommand => new(Submit);
 
-	public List<NetworkInfo> NetworkInterfaces { get; private set; } = new();
-	public NetworkInfo NetworkInterface { get; set; }
-	public int? HomeId { get; set; }
+    public async Task Initialise()
+    {
+        NetworkInterfaces = NetworkHelper.GetNetworkInfo().ToList();
 
-	public AsyncRelayCommand SubmitCommand => new(Submit);
+        var settings = await _settingsDataAccess.LoadAsync();
+        if(settings is not null)
+        {
+            HomeId = settings.HomeId;
+            NetworkInterface = NetworkInterfaces.FirstOrDefault(info => info.Id == settings.NetworkInterfaceId);
+        }
+    }
 
-	public override async Task Initialise()
-	{
-		NetworkInterfaces = NetworkHelper.GetNetworkInfo().ToList();
+    public override async Task Validate()
+    {
+        ClearErrors();
 
-		var settings = await _settingsDataAccess.LoadAsync();
-		if(settings is not null)
-		{
-			HomeId = settings.HomeId;
-			NetworkInterface = NetworkInterfaces.FirstOrDefault(info => info.Id == settings.NetworkInterfaceId);
-		}
-	}
+        if(NetworkInterface is null)
+        {
+            AddError(NetworkInterface, "Please select a network interface.");
+        }
 
-	public override async Task Validate()
-	{
-		ClearErrors();
+        if(HomeId is null or 0 or int.MinValue)
+        {
+            AddError(HomeId, "Please enter a valid WiZ Home ID.");
+        }
+    }
 
-		if(NetworkInterface is null)
-		{
-			AddError(NetworkInterface, "Please select a network interface.");
-		}
+    public async Task Submit()
+    {
+        await Validate();
 
-		if(HomeId is null or 0 or int.MinValue)
-		{
-			AddError(HomeId, "Please enter a valid WiZ Home ID.");
-		}
-	}
+        if(HasErrors)
+        {
+            return;
+        }
 
-	public async Task Submit()
-	{
-		await Validate();
+        var homeId = HomeId!.Value;
 
-		if(HasErrors)
-		{
-			return;
-		}
+        await _settingsDataAccess.SaveAsync(new()
+        {
+            HomeId = homeId,
+            NetworkInterfaceId = NetworkInterface.Id
+        });
 
-		var homeId = HomeId!.Value;
-
-		await _settingsDataAccess.SaveAsync(new()
-		{
-			HomeId = homeId,
-			NetworkInterfaceId = NetworkInterface.Id
-		});
-
-		await _navigationService.GoToBulbList(homeId);
-	}
+        await _navigationCommands.GoToBulbList(homeId);
+    }
 }

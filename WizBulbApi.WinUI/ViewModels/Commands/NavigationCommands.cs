@@ -2,61 +2,70 @@
 
 namespace WizBulbApi.WinUI;
 
-public static class NavigationCommands
+public class NavigationCommands
 {
-	public static async Task<BulbListViewModel> GoToBulbList(this INavigationService navigationService, int homeId, INavigationOptions? navigationOptions = default)
-	{
-		var viewModel = BulbListViewModel.Create(homeId);
+    private readonly INavigationService _navigationService;
+    private readonly IViewModelProvider _viewModelProvider;
 
-		navigationService.Navigate(
-			typeof(BulbListView),
-			viewModel,
-			navigationOptions);
+    public NavigationCommands(INavigationService navigationService, IViewModelProvider viewModelProvider)
+    {
+        _navigationService = navigationService;
+        _viewModelProvider = viewModelProvider;
+    }
 
-		await viewModel.Initialise();
+    public async Task<BulbListViewModel> GoToBulbList(int homeId, INavigationOptions? navigationOptions = default)
+    {
+        var viewModel = _viewModelProvider.Create<BulbListViewModel>();
 
-		return viewModel;
-	}
+        _navigationService.Navigate(
+            typeof(BulbListView),
+            viewModel,
+            navigationOptions);
 
-	public static async Task<BulbViewModel> GoToBulb(this INavigationService navigationService, BulbHandle handle, INavigationOptions? navigationOptions = default)
-	{
-		var viewModel = BulbViewModel.Create(handle);
+        await viewModel.Initialise(homeId);
 
-		navigationService.Navigate(
-			typeof(BulbView),
-			viewModel,
-			navigationOptions);
+        return viewModel;
+    }
 
-		await viewModel.Initialise();
+    public async Task<BulbViewModel> GoToBulb(BulbHandle handle, INavigationOptions? navigationOptions = default)
+    {
+        var viewModel = _viewModelProvider.Create<BulbViewModel>();
 
-		return viewModel;
-	}
+        _navigationService.Navigate(
+            typeof(BulbView),
+            viewModel,
+            navigationOptions);
 
-	public static async Task<LoginViewModel> GoToLogin(this INavigationService navigationService, INavigationOptions? navigationOptions = default)
-	{
-		var viewModel = LoginViewModel.Create();
+        await viewModel.Initialise(handle);
 
-		navigationService.Navigate(
-			typeof(LoginView),
-			viewModel,
-			navigationOptions);
+        return viewModel;
+    }
 
-		await viewModel.Initialise();
+    public async Task<LoginViewModel> GoToLogin(INavigationOptions? navigationOptions = default)
+    {
+        var viewModel = _viewModelProvider.Create<LoginViewModel>();
 
-		return viewModel;
-	}
+        _navigationService.Navigate(
+            typeof(LoginView),
+            viewModel,
+            navigationOptions);
 
-	public static async Task<SettingsViewModel> GoToSettings(this INavigationService navigationService, INavigationOptions? navigationOptions = default)
-	{
-		var viewModel = SettingsViewModel.Create();
+        await viewModel.Initialise();
 
-		navigationService.Navigate(
-			typeof(SettingsView),
-			viewModel,
-			navigationOptions);
+        return viewModel;
+    }
 
-		await viewModel.Initialise();
+    public async Task<SettingsViewModel> GoToSettings(INavigationOptions? navigationOptions = default)
+    {
+        var viewModel = _viewModelProvider.Create<SettingsViewModel>();
 
-		return viewModel;
-	}
+        _navigationService.Navigate(
+            typeof(SettingsView),
+            viewModel,
+            navigationOptions);
+
+        await viewModel.Initialise();
+
+        return viewModel;
+    }
 }
